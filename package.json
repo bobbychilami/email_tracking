@@ -1,18 +1,24 @@
 {
-    "name": "gmail-tracking-pixel",
+    "name": "email-tracking-pixel",
     "version": "1.0.0",
-    "description": "Email tracking system for Gmail",
+    "description": "Email tracking pixel system with PostgreSQL backend",
     "main": "tracking-server.js",
     "scripts": {
       "start": "node tracking-server.js",
-      "setup": "node save-transparent-gif.js"
+      "setup": "node save-transparent-gif.js",
+      "dev": "nodemon server.js"
+    },
+    "engines": {
+      "node": ">=16.0.0"
     },
     "dependencies": {
-      "express": "^4.18.2",
-      "mysql2": "^3.3.1",
-      "request-ip": "^3.3.0",
-      "geoip-lite": "^1.4.7",
       "cors": "^2.8.5",
-      "dotenv": "^16.0.3"
+      "dotenv": "^16.0.3",
+      "express": "^4.18.2",
+      "pg": "^8.10.0",
+      "uuid": "^9.0.0"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.22"
     }
   }
