@@ -3,7 +3,7 @@ services:
     name: email-tracking-pixel
     env: node
     buildCommand: npm install
-    startCommand: node tracking-server.js
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
