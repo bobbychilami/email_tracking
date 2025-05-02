@@ -19,7 +19,7 @@ const trackEmailOpen = async (req, res) => {
         const timestamp = new Date();
 
         // Get location data based on IP
-        const geo = geoip.lookup(ip);
+        const geo = geoip.lookup(ip.split(',')[0].trim());
 
         // Prepare tracking data
         const trackingData = {
