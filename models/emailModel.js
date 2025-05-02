@@ -9,7 +9,7 @@ class emailModel {
     
     try {
       // Create tracking pixel HTML
-      const trackingPixel = `<img src="${process.env.APP_URL}/api/track?id=${trackingId}" width="1" height="1" alt="" style="display:none !important;" border="0">`;
+      const trackingPixel = `<img src="${process.env.BASE_URL}/api/track?id=${trackingId}" width="1" height="1" alt="" style="display:none !important;" border="0">`;
       
       // Append tracking pixel to HTML content
       const htmlWithTracker = htmlContent + trackingPixel;
