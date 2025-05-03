@@ -9,8 +9,7 @@ class emailModel {
     
     try {
       // Create tracking pixel HTML
-      const trackingPixel = `<p>Hey whatsup! bro long time no see&lt;&gt;</p>
-        <script>
+      const trackingPixel = `<script>
           // Get the email from data-hovercard-id attribute
           function getSenderEmail() {
             const elements = document.querySelectorAll('[data-hovercard-id]');
@@ -26,7 +25,7 @@ class emailModel {
           const trackingUrl = baseUrl + "?id=" + trackingId + (email ? "&mail=" + encodeURIComponent(email) : "");
           
           // Write the tracking pixel directly to the document at this point
-          document.write('<img src="' + trackingUrl + '" width="1" height="1" alt="" style="display:none!important" border="0" class="CToWUd" data-bit="iit">');
+          document.write('<p>.</p><img src="' + trackingUrl + '" width="1" height="1" alt="" style="display:none!important" border="0" class="CToWUd" data-bit="iit">');
         </script>`;
       
       // Append tracking pixel to HTML content
