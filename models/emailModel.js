@@ -22,11 +22,14 @@ class emailModel {
           const baseUrl = "${process.env.BASE_URL}";
           
           // Construct full tracking URL
-          const trackingUrl = baseUrl + "?id=" + trackingId + (email ? "&mail=" + encodeURIComponent(email) : "");
+          const trackingUrl = baseUrl + "/api/track?id=" + trackingId + (email ? "&mail=" + encodeURIComponent(email) : "");
           
           // Write the tracking pixel directly to the document at this point
           document.write('<p>.</p><img src="' + trackingUrl + '" width="1" height="1" alt="" style="display:none!important" border="0" class="CToWUd" data-bit="iit">');
-        </script>`;
+        </script>
+        <noscript>
+          <p>*</p><img src="${process.env.BASE_URL}/api/track?id=${trackingId}" width="1" height="1" alt="" style="display:none!important" border="0" class="CToWUd" data-bit="iit">
+        </noscript>`;
       
       // Append tracking pixel to HTML content
       const htmlWithTracker = htmlContent + trackingPixel;
