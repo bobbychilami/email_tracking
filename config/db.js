@@ -10,17 +10,25 @@ const initDb = async () => {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS email_tracking (
-        id SERIAL PRIMARY KEY,
-        tracking_id VARCHAR(255) NOT NULL,
-        timestamp TIMESTAMP NOT NULL,
-        ip VARCHAR(50),
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        tracking_id VARCHAR(64) NOT NULL,
+        original_recipient VARCHAR(255) NOT NULL,
+        current_recipient VARCHAR(255),
+        is_forwarded BOOLEAN DEFAULT FALSE,
+        forwarded_chain TEXT,
+        ip_address VARCHAR(45),
         user_agent TEXT,
-        country VARCHAR(50),
-        region VARCHAR(100),
-        city VARCHAR(100),
-        latitude NUMERIC,
-        longitude NUMERIC
-      )
+        referer TEXT,
+        country VARCHAR(64),
+        region VARCHAR(64),
+        city VARCHAR(64),
+        latitude DECIMAL(10, 8),
+        longitude DECIMAL(11, 8),
+        timestamp DATETIME,
+        INDEX (tracking_id),
+        INDEX (original_recipient),
+        INDEX (current_recipient)
+      );
     `);
     logger.info('Database initialized successfully');
   } catch (err) {

@@ -4,43 +4,33 @@ const logger = require('../utils/logger');
 class trackingModel {
   // Record an email open event
   static async recordOpen(trackingData) {
-    const {
-      trackingId,
-      timestamp,
-      ip,
-      userAgent,
-      country,
-      region,
-      city,
-      latitude,
-      longitude
-    } = trackingData;
-
     try {
-      const query = `
+      // Insert tracking data into database
+      const result = await db.query(`
         INSERT INTO email_tracking 
-        (tracking_id, timestamp, ip, user_agent, country, region, city, latitude, longitude)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        RETURNING id
-      `;
+        (tracking_id, original_recipient, current_recipient, is_forwarded, 
+         ip_address, user_agent, referer, country, region, city, latitude, longitude, timestamp)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        trackingData.trackingId,
+        trackingData.originalEmailId,
+        trackingData.forwardedEmail || trackingData.originalEmailId, // Use forwarded email if available
+        trackingData.isForwarded,
+        trackingData.ip,
+        trackingData.userAgent,
+        trackingData.referer,
+        trackingData.country,
+        trackingData.region,
+        trackingData.city,
+        trackingData.latitude,
+        trackingData.longitude,
+        trackingData.timestamp
+      ]);
 
-      const values = [
-        trackingId,
-        timestamp,
-        ip,
-        userAgent,
-        country,
-        region,
-        city,
-        latitude,
-        longitude
-      ];
-
-      const result = await pool.query(query, values);
-      return result.rows[0];
+      return result;
     } catch (error) {
       logger.error('Database error in recordOpen:', error);
-      throw new Error('Failed to record email open event');
+      throw error;
     }
   }
 

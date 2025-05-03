@@ -10,6 +10,14 @@ const TRACKING_PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAAB
 const trackEmailOpen = async (req, res) => {
     try {
         const trackingId = req.query.id;
+        const originalEmailId = req.query.email; // Original recipient
+        
+        // Get Referer header which may contain forwarding info
+        const referer = req.headers['referer'];
+        
+        // Try to detect if this is a forwarded email
+        const forwardedEmail = detectForwardedEmail(req);
+        
         if (!trackingId) {
             return sendTrackingPixel(res); // Still send pixel but don't record
         }
@@ -22,9 +30,13 @@ const trackEmailOpen = async (req, res) => {
         const geo = geoip.lookup(ip.split(',')[0].trim());
         console.log("IP:", ip.split(',')[0].trim(), "Geo:", geo);
 
-        // Prepare tracking data
+        // Prepare tracking data with email ID and forwarding info
         const trackingData = {
             trackingId,
+            originalEmailId,     // Original recipient
+            forwardedEmail,      // Email that forwarded (if detected)
+            isForwarded: !!forwardedEmail,
+            referer,
             timestamp,
             ip,
             userAgent,
@@ -38,7 +50,11 @@ const trackEmailOpen = async (req, res) => {
         // Record the open event (don't await to speed up response)
         trackingModel.recordOpen(trackingData)
             .then(() => {
-                logger.info(`Email ${trackingId} opened at ${timestamp}`);
+                if (trackingData.isForwarded) {
+                    logger.info(`Forwarded email ${trackingId} opened by ${forwardedEmail || 'unknown forwarded recipient'} (original: ${originalEmailId || 'unknown'}) at ${timestamp}`);
+                } else {
+                    logger.info(`Email ${trackingId} opened by original recipient ${originalEmailId || 'unknown'} at ${timestamp}`);
+                }
                 if (geo) {
                     logger.info(`Location: ${geo.city}, ${geo.region}, ${geo.country}`);
                 }
@@ -53,6 +69,40 @@ const trackEmailOpen = async (req, res) => {
         logger.error('Error in trackEmailOpen:', err);
         sendTrackingPixel(res); // Still send pixel even if tracking fails
     }
+};
+
+const detectForwardedEmail = (req) => {
+    // Check if the email client passes a specific parameter for forwarded emails
+    if (req.query.forwarded) {
+        return req.query.forwarded;
+    }
+    console.log("req.query : ", req.query, "req.headers: ", req.headers);
+    
+    // Check for X-Forwarded-Email header (custom implementation needed in email clients)
+    if (req.headers['x-forwarded-email']) {
+        return req.headers['x-forwarded-email'];
+    }
+    
+    // Check for common patterns in email clients that might indicate forwarding
+    const userAgent = req.headers['user-agent'] || '';
+    const referer = req.headers['referer'] || '';
+    
+    // Extract email from URL parameters if present (custom implementation in tracking links)
+    const urlParams = new URL(referer).searchParams;
+    if (urlParams.has('forwardedBy')) {
+        return urlParams.get('forwardedBy');
+    }
+    
+    // Try to extract from cookies if your system sets them
+    const cookies = req.cookies;
+    if (cookies && cookies.emailIdentifier) {
+        return cookies.emailIdentifier;
+    }
+    
+    // If none of the above methods work, we can implement a more sophisticated
+    // fingerprinting system to identify unique email clients
+    
+    return null;
 };
 
 // Helper function to send tracking pixel
