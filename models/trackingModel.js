@@ -6,7 +6,7 @@ class trackingModel {
   static async recordOpen(trackingData) {
     try {
       // Insert tracking data into database
-      const result = await db.query(`
+      const result = await pool.query(`
         INSERT INTO email_tracking 
         (tracking_id, original_recipient, current_recipient, is_forwarded, 
          ip_address, user_agent, referer, country, region, city, latitude, longitude, timestamp)
