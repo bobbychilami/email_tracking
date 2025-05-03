@@ -16,7 +16,7 @@ const initDb = async () => {
         current_recipient VARCHAR(255),
         is_forwarded BOOLEAN DEFAULT FALSE,
         forwarded_chain VARCHAR(255),
-        ip_address VARCHAR(45),
+        ip_address VARCHAR(225),
         user_agent VARCHAR(255),
         referer VARCHAR(255),
         country VARCHAR(64),
