@@ -24,7 +24,7 @@ const initDb = async () => {
         city VARCHAR(64),
         latitude DECIMAL(10, 8),
         longitude DECIMAL(11, 8),
-        timestamp DATETIME
+        timestamp TIMESTAMP
       )
     `);
     logger.info('Database initialized successfully');
