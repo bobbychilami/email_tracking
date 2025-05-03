@@ -12,7 +12,7 @@ const initDb = async () => {
       CREATE TABLE IF NOT EXISTS email_tracking (
         id SERIAL PRIMARY KEY,
         tracking_id VARCHAR(64) NOT NULL,
-        original_recipient VARCHAR(255) NOT NULL,
+        original_recipient VARCHAR(255) DEFAULT NULL,
         current_recipient VARCHAR(255),
         is_forwarded BOOLEAN DEFAULT FALSE,
         forwarded_chain VARCHAR(255),
