@@ -5,13 +5,15 @@ class trackingModel {
   // Record an email open event
   static async recordOpen(trackingData) {
     try {
-      // Insert tracking data into database
-      const result = await pool.query(`
+      const query = `
         INSERT INTO email_tracking 
         (tracking_id, original_recipient, current_recipient, is_forwarded, 
          ip_address, user_agent, referer, country, region, city, latitude, longitude, timestamp)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING id
+      `;
+
+      const values = [
         trackingData.trackingId,
         trackingData.originalEmailId,
         trackingData.forwardedEmail || trackingData.originalEmailId, // Use forwarded email if available
@@ -25,12 +27,13 @@ class trackingModel {
         trackingData.latitude,
         trackingData.longitude,
         trackingData.timestamp
-      ]);
+      ];
 
-      return result;
+      const result = await pool.query(query, values);
+      return result.rows[0];
     } catch (error) {
       logger.error('Database error in recordOpen:', error);
-      throw error;
+      throw new Error('Failed to record email open event');
     }
   }
 
