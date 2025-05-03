@@ -24,10 +24,7 @@ const initDb = async () => {
         city VARCHAR(64),
         latitude DECIMAL(10, 8),
         longitude DECIMAL(11, 8),
-        timestamp DATETIME,
-        INDEX (tracking_id),
-        INDEX (original_recipient),
-        INDEX (current_recipient)
+        timestamp DATETIME
       );
     `);
     logger.info('Database initialized successfully');
