@@ -11,13 +11,13 @@ const trackEmailOpen = async (req, res) => {
     try {
         const trackingId = req.query.id;
         const originalEmailId = req.query.email; // Original recipient
-        
+
         // Get Referer header which may contain forwarding info
         const referer = req.headers['referer'];
-        
+
         // Try to detect if this is a forwarded email
         const forwardedEmail = detectForwardedEmail(req);
-        
+
         if (!trackingId) {
             return sendTrackingPixel(res); // Still send pixel but don't record
         }
@@ -77,31 +77,32 @@ const detectForwardedEmail = (req) => {
         return req.query.forwarded;
     }
     console.log("req.query : ", req.query, "req.headers: ", req.headers);
-    
+
     // Check for X-Forwarded-Email header (custom implementation needed in email clients)
     if (req.headers['x-forwarded-email']) {
         return req.headers['x-forwarded-email'];
     }
-    
+
     // Check for common patterns in email clients that might indicate forwarding
     const userAgent = req.headers['user-agent'] || '';
     const referer = req.headers['referer'] || '';
-    
+
     // Extract email from URL parameters if present (custom implementation in tracking links)
-    const urlParams = new URL(referer).searchParams;
-    if (urlParams.has('forwardedBy')) {
-        return urlParams.get('forwardedBy');
+    if (referer) {
+        const urlParams = new URL(referer).searchParams;
+        if (urlParams.has('forwardedBy')) {
+            return urlParams.get('forwardedBy');
+        }
     }
-    
     // Try to extract from cookies if your system sets them
     const cookies = req.cookies;
     if (cookies && cookies.emailIdentifier) {
         return cookies.emailIdentifier;
     }
-    
+
     // If none of the above methods work, we can implement a more sophisticated
     // fingerprinting system to identify unique email clients
-    
+
     return null;
 };
 
